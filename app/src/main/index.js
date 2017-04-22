@@ -1,11 +1,23 @@
 'use strict';
 
-import { app, BrowserWindow } from 'electron';
+import fs from 'fs';
+import { app, BrowserWindow, ipcMain } from 'electron';
 
 let mainWindow;
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:${require('../../../config').port}`
   : `file://${__dirname}/index.html`;
+
+function readFolder (event, path) {
+  fs.readdir(path, (err, data) => {
+    if (err) {
+      console.log('error: ' + err);
+      return;
+    }
+    console.log(data);
+    mainWindow.webContents.send('files-scanned', data);
+  });
+}
 
 function createWindow () {
   /**
@@ -22,6 +34,9 @@ function createWindow () {
     mainWindow = null;
   });
 
+  mainWindow.webContents.webContents.on('did-finish-load', () => {
+    ipcMain.on('folder-changed', readFolder);
+  });
   // eslint-disable-next-line no-console
   console.log('mainWindow opened');
 }
