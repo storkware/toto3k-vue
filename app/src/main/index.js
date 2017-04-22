@@ -20,6 +20,10 @@ function scanFiles (event, path) {
   });
 }
 
+function playFile (event, path) {
+  console.log("should play", path);
+}
+
 function createWindow () {
   /**
    * Initial window options
@@ -35,10 +39,9 @@ function createWindow () {
     mainWindow = null;
   });
 
-  mainWindow.webContents.webContents.on('did-finish-load', function () {
-    ipcMain.on(constants.events.FOLDER_CHANGED, function (event, folder) {
-      scanFiles(event, folder);
-    });
+  mainWindow.webContents.on('did-finish-load', function () {
+    ipcMain.on(constants.events.FOLDER_CHANGED, scanFiles);
+    ipcMain.on(constants.events.FILE_SELECTED, playFile);
   });
   // eslint-disable-next-line no-console
   console.log('mainWindow opened');

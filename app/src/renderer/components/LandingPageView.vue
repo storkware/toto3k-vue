@@ -6,11 +6,12 @@
         <span>Folder:</span>
         <input type="text" v-model="folder">
       </label>
-      <button v-on:click="browseFolder" type="button">Scan</button>
+      <button v-on:click="browseFolder()" type="button">Scan</button>
     </form>
     <ul>
       <li v-for="path in paths">
         {{ path }}
+        <button v-on:click="playFile(path)" type="button">Play</button>
       </li>
     </ul>
   </div>
@@ -36,7 +37,12 @@ export default {
   },
   methods: {
     browseFolder () {
+      console.log('browsing', this.folder);
       ipcRenderer.send(constants.events.FOLDER_CHANGED, this.folder);
+    },
+    playFile (filePath) {
+      console.log('play', filePath);
+      ipcRenderer.send(constants.events.FILE_SELECTED, filePath);
     }
   },
   name: 'landing-page'
