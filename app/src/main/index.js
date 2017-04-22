@@ -1,6 +1,7 @@
 'use strict';
 
 import fs from 'fs';
+import constants from '../commons/constants';
 import { app, BrowserWindow, ipcMain } from 'electron';
 
 let mainWindow;
@@ -8,14 +9,14 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:${require('../../../config').port}`
   : `file://${__dirname}/index.html`;
 
-function readFolder (event, path) {
-  fs.readdir(path, (err, data) => {
+function scanFiles (event, path) {
+  fs.readdir(path, function (err, data) {
     if (err) {
       console.log('error: ' + err);
       return;
     }
     console.log(data);
-    mainWindow.webContents.send('files-scanned', data);
+    event.sender.send(constants.events.FILES_SCANNED, data);
   });
 }
 
@@ -34,8 +35,10 @@ function createWindow () {
     mainWindow = null;
   });
 
-  mainWindow.webContents.webContents.on('did-finish-load', () => {
-    ipcMain.on('folder-changed', readFolder);
+  mainWindow.webContents.webContents.on('did-finish-load', function () {
+    ipcMain.on(constants.events.FOLDER_CHANGED, function (event, folder) {
+      scanFiles(event, folder);
+    });
   });
   // eslint-disable-next-line no-console
   console.log('mainWindow opened');

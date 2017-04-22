@@ -18,6 +18,7 @@
 
 <script>
 import os from 'os';
+import constants from '../../commons/constants';
 import { ipcRenderer } from 'electron';
 
 export default {
@@ -28,13 +29,14 @@ export default {
     };
   },
   created () {
-    ipcRenderer.on('files-scanned', (event, data) => {
+    // Using => to keep proper reference to 'this'
+    ipcRenderer.on(constants.events.FILES_SCANNED, (event, data) => {
       this.paths = data;
     });
   },
   methods: {
     browseFolder () {
-      ipcRenderer.send('folder-changed', this.folder);
+      ipcRenderer.send(constants.events.FOLDER_CHANGED, this.folder);
     }
   },
   name: 'landing-page'
