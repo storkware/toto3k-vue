@@ -17,8 +17,8 @@
     "postinstall": "npm run lint:fix && cd app && npm install"
   },
   "build": {
-    "productName": "ElectronVue",
-    "appId": "org.simulatedgreg.electron-vue",
+    "productName": "toto3k",
+    "appId": "org.storkware.toto3k",
     "category": "public.app-category.tools",
     "dmg": {
       "contents": [
@@ -52,7 +52,7 @@
       ]
     }
   },
-  "author": "Greg Holguin <simulatedgreg@gmail.com>",
+  "author": "Storkware <storkware@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.8.0",
