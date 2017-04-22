@@ -13,6 +13,8 @@ module.exports = {
     'html'
   ],
   'rules': {
+    // Force final semicolons.
+    'semi': ['warn', 'always'],
     // allow paren-less arrow functions
     'arrow-parens': 0,
     // allow async-await
