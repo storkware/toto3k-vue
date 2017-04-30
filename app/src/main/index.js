@@ -1,27 +1,31 @@
 'use strict';
 
 import fs from 'fs';
+import path from 'path';
+import decode from 'urldecode';
 import constants from '../commons/constants';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 
 let mainWindow;
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:${require('../../../config').port}`
   : `file://${__dirname}/index.html`;
 
-function scanFiles (event, path) {
-  fs.readdir(path, function (err, data) {
+function scanFiles (event, folderPath) {
+  fs.readdir(folderPath, function (err, data) {
     if (err) {
       console.log('error: ' + err);
       return;
     }
     console.log(data);
+    data = data.map(filename => path.join(folderPath, filename));
     event.sender.send(constants.events.FILES_SCANNED, data);
   });
 }
 
 function playFile (event, path) {
-  console.log("should play", path);
+  console.log('should play', path);
+  event.sender.send(constants.events.FILE_TO_PLAY, path);
 }
 
 function createWindow () {
@@ -42,6 +46,14 @@ function createWindow () {
   mainWindow.webContents.on('did-finish-load', function () {
     ipcMain.on(constants.events.FOLDER_CHANGED, scanFiles);
     ipcMain.on(constants.events.FILE_SELECTED, playFile);
+  });
+
+  protocol.registerFileProtocol(constants.protocol.PROTOCOL, (request, callback) => {
+    // Decode URLs as they might contain some weird characters (encoded by Chrome automatically).
+    const url = decode(request.url.substr(constants.protocol.PROTOCOL_WITH_SLASHES.length));
+    callback({path: path.normalize(`${url}`)});
+  }, (error) => {
+    if (error) console.error('Failed to register protocol');
   });
   // eslint-disable-next-line no-console
   console.log('mainWindow opened');

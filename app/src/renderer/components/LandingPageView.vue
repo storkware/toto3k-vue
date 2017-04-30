@@ -6,7 +6,7 @@
         <span>Folder:</span>
         <input type="text" v-model="folder">
       </label>
-      <button v-on:click="browseFolder()" type="button">Scan</button>
+      <button v-on:click="scanFolder()" type="button">Scan</button>
     </form>
     <ul>
       <li v-for="path in paths">
@@ -14,6 +14,7 @@
         <button v-on:click="playFile(path)" type="button">Play</button>
       </li>
     </ul>
+    <audio id="audio"></audio>
   </div>
 </template>
 
@@ -34,9 +35,15 @@ export default {
     ipcRenderer.on(constants.events.FILES_SCANNED, (event, data) => {
       this.paths = data;
     });
+    ipcRenderer.on(constants.events.FILE_TO_PLAY, (event, data) => {
+      let audio = document.getElementById('audio');
+      audio.src = constants.protocol.PROTOCOL_WITH_SLASHES + data;
+      audio.volume = 0.2;
+      audio.play();
+    });
   },
   methods: {
-    browseFolder () {
+    scanFolder () {
       console.log('browsing', this.folder);
       ipcRenderer.send(constants.events.FOLDER_CHANGED, this.folder);
     },
