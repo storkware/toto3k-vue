@@ -12,6 +12,7 @@
       <li v-for="path in paths">
         {{ path }}
         <button v-on:click="playFile(path)" type="button">Play</button>
+        <button v-on:click="pauseFile(path)" type="button">Pause</button>
       </li>
     </ul>
     <audio id="audio"></audio>
@@ -19,7 +20,7 @@
 </template>
 
 <script>
-import os from 'os';
+// import os from 'os';
 import constants from '../../commons/constants';
 import { ipcRenderer } from 'electron';
 
@@ -27,7 +28,7 @@ export default {
   data () {
     return {
       paths: [],
-      folder: os.homedir()
+      folder: "/Users/chris/Music/iTunes/iTunes Media/Music/Sharon Van Etten/I Don't Want to Let You Down" // os.homedir()
     };
   },
   created () {
@@ -37,9 +38,16 @@ export default {
     });
     ipcRenderer.on(constants.events.FILE_TO_PLAY, (event, data) => {
       let audio = document.getElementById('audio');
+      let src = constants.protocol.PROTOCOL_WITH_SLASHES + data;
+
       audio.autoplay = true;
-      audio.src = constants.protocol.PROTOCOL_WITH_SLASHES + data;
       audio.volume = 0.2;
+
+      if (src !== audio.src) {
+        audio.src = src;
+      } else {
+        audio.play();
+      }
     });
   },
   methods: {
@@ -50,6 +58,11 @@ export default {
     playFile (filePath) {
       console.log('play', filePath);
       ipcRenderer.send(constants.events.FILE_SELECTED, filePath);
+    },
+    pauseFile (filePath) {
+      console.log('pause', filePath);
+      let audio = document.getElementById('audio');
+      audio.pause();
     }
   },
   name: 'landing-page'
