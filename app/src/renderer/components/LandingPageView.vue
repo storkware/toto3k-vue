@@ -37,9 +37,9 @@ export default {
     });
     ipcRenderer.on(constants.events.FILE_TO_PLAY, (event, data) => {
       let audio = document.getElementById('audio');
+      audio.autoplay = true;
       audio.src = constants.protocol.PROTOCOL_WITH_SLASHES + data;
       audio.volume = 0.2;
-      audio.play();
     });
   },
   methods: {
