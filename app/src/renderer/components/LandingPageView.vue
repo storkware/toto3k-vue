@@ -57,7 +57,17 @@ export default {
     },
     playFile (filePath) {
       console.log('play', filePath);
-      ipcRenderer.send(constants.events.FILE_SELECTED, filePath);
+      let audio = document.getElementById('audio');
+      let src = constants.protocol.PROTOCOL_WITH_SLASHES + filePath;
+
+      audio.autoplay = true;
+      audio.volume = 0.2;
+
+      if (src !== audio.src) {
+        audio.src = src;
+      } else {
+        audio.play();
+      }
     },
     pauseFile (filePath) {
       console.log('pause', filePath);

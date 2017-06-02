@@ -23,11 +23,6 @@ function scanFiles (event, folderPath) {
   });
 }
 
-function playFile (event, path) {
-  console.log('should play', path);
-  event.sender.send(constants.events.FILE_TO_PLAY, path);
-}
-
 function createWindow () {
   /**
    * Initial window options
@@ -45,7 +40,6 @@ function createWindow () {
 
   mainWindow.webContents.on('did-finish-load', function () {
     ipcMain.on(constants.events.FOLDER_CHANGED, scanFiles);
-    ipcMain.on(constants.events.FILE_SELECTED, playFile);
   });
 
   protocol.registerFileProtocol(constants.protocol.PROTOCOL, (request, callback) => {
