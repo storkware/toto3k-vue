@@ -54,6 +54,10 @@
   },
   "author": "Storkware <storkware@gmail.com>",
   "license": "MIT",
+  "dependencies": {
+    "node-dir": "^0.1.17",
+    "urldecode": "^1.0.1"
+  },
   "devDependencies": {
     "babel-core": "^6.8.0",
     "babel-eslint": "^7.0.0",
@@ -100,7 +104,6 @@
     "style-loader": "^0.13.1",
     "tree-kill": "^1.1.0",
     "url-loader": "^0.5.7",
-    "urldecode": "^1.0.1",
     "vue-hot-reload-api": "^2.0.7",
     "vue-html-loader": "^1.2.2",
     "vue-loader": "^10.0.2",
@@ -109,6 +112,5 @@
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.3.0",
     "webpack-merge": "^2.4.0"
-  },
-  "dependencies": {}
+  }
 }

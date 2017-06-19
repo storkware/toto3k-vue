@@ -1,10 +1,10 @@
 'use strict';
 
-import fs from 'fs';
 import path from 'path';
 import decode from 'urldecode';
 import constants from '../commons/constants';
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
+import dir from 'node-dir';
 
 let mainWindow;
 const winURL = process.env.NODE_ENV === 'development'
@@ -12,13 +12,14 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`;
 
 function scanFiles (event, folderPath) {
-  fs.readdir(folderPath, function (err, data) {
+  dir.files(folderPath, 'file', (err, data) => {
     if (err) {
       console.log('error: ' + err);
       return;
     }
     console.log(data);
-    data = data.map(filename => path.join(folderPath, filename));
+    // FIXME: Check more extensions properly
+    data = data.filter((file) => file.endsWith('.mp3'));
     event.sender.send(constants.events.FILES_SCANNED, data);
   });
 }
