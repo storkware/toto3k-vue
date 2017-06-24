@@ -42,7 +42,6 @@ export default {
   created () {
     // Using => to keep proper reference to 'this'
     ipcRenderer.on(constants.events.FILES_SCANNED, (event, data) => {
-      debugger;
       this.songs = data;
     });
   },

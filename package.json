@@ -55,8 +55,8 @@
   "author": "Storkware <storkware@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "musicmetadata": "^2.0.5",
     "node-dir": "^0.1.17",
-    "node-id3": "0.0.9",
     "urldecode": "^1.0.1"
   },
   "devDependencies": {
