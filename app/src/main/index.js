@@ -48,7 +48,9 @@ function createWindow () {
     const url = decode(request.url.substr(constants.protocol.PROTOCOL_WITH_SLASHES.length));
     callback({path: path.normalize(`${url}`)});
   }, (error) => {
-    if (error) console.error('Failed to register protocol');
+    if (error) {
+      console.error('Failed to register protocol');
+    }
   });
   // eslint-disable-next-line no-console
   console.log('mainWindow opened');

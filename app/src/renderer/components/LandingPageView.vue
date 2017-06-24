@@ -9,10 +9,13 @@
       <button v-on:click="scanFolder()" type="button">Scan</button>
     </form>
     <ul>
-      <li v-for="path in paths">
-        {{ path }}
-        <button v-on:click="playFile(path)" type="button">Play</button>
-        <button v-on:click="pauseFile(path)" type="button">Pause</button>
+      <li v-for="path in paths" v-bind:key="path">
+        <song-list-item
+          :metadata="{}"
+          :path="path"
+          @play-file="playFile($event)"
+          @pause-file="pauseFile($event)">
+        </song-list-item>
       </li>
     </ul>
     <audio id="audio"></audio>
@@ -23,8 +26,10 @@
 // import os from 'os';
 import constants from '../../commons/constants';
 import { ipcRenderer } from 'electron';
+import SongListItemView from 'components/SongListItemView';
 
 export default {
+  components: { 'song-list-item': SongListItemView },
   data () {
     return {
       paths: [],
