@@ -3,6 +3,7 @@
 import path from 'path';
 import decode from 'urldecode';
 import constants from '../commons/constants';
+import id3 from 'node-id3';
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import dir from 'node-dir';
 
@@ -12,14 +13,31 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`;
 
 function scanFiles (event, folderPath) {
-  dir.files(folderPath, 'file', (err, data) => {
+  dir.files(folderPath, 'file', (err, files) => {
     if (err) {
       console.log('error: ' + err);
       return;
     }
+    console.log(files);
+    // TODO: Manage more extensions properly with different metadata parsers.
+    files = files.filter((file) => file.endsWith('.mp3'));
+    let data = [];
+    files.forEach((file) => {
+      // Synchronous call...
+      data.push({ path: file, metadata: id3.read(file) });
+      // ffmetadata.read(file, function (err, metadata) {
+      //   if (err) {
+      //     console.error('Error reading metadata', err);
+      //     return;
+      //   }
+      //   console.log(metadata);
+      //   data.push({ path: file, metadata: metadata });
+      //   if (data.length === files.length) {
+      //     event.sender.send(constants.events.FILES_SCANNED, data);
+      //   }
+      // });
+    });
     console.log(data);
-    // FIXME: Check more extensions properly
-    data = data.filter((file) => file.endsWith('.mp3'));
     event.sender.send(constants.events.FILES_SCANNED, data);
   });
 }
@@ -46,7 +64,7 @@ function createWindow () {
   protocol.registerFileProtocol(constants.protocol.PROTOCOL, (request, callback) => {
     // Decode URLs as they might contain some weird characters (encoded by Chrome automatically).
     const url = decode(request.url.substr(constants.protocol.PROTOCOL_WITH_SLASHES.length));
-    callback({path: path.normalize(`${url}`)});
+    callback({ path: path.normalize(`${url}`) });
   }, (error) => {
     if (error) {
       console.error('Failed to register protocol');

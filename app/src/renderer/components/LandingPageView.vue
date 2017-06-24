@@ -9,10 +9,11 @@
       <button v-on:click="scanFolder()" type="button">Scan</button>
     </form>
     <ul>
-      <li v-for="path in paths" v-bind:key="path">
+      <li v-for="song in songs" v-bind:key="song">
         <song-list-item
-          :metadata="{}"
-          :path="path"
+          :metadata="song.metadata"
+          :columns="columns"
+          :path="song.path"
           @play-file="playFile($event)"
           @pause-file="pauseFile($event)">
         </song-list-item>
@@ -32,7 +33,8 @@ export default {
   components: { 'song-list-item': SongListItemView },
   data () {
     return {
-      paths: [],
+      columns: ['title', 'artist', 'album'],
+      songs: [],
       // FIXME: folder: 'D:\\Music\\Occident' or os.homedir()
       folder: '/Users/chris/Music/iTunes/iTunes Media/Music' // os.homedir()
     };
@@ -40,7 +42,8 @@ export default {
   created () {
     // Using => to keep proper reference to 'this'
     ipcRenderer.on(constants.events.FILES_SCANNED, (event, data) => {
-      this.paths = data;
+      debugger;
+      this.songs = data;
     });
   },
   methods: {

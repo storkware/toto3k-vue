@@ -1,8 +1,8 @@
 <template>
   <div>
     <ul>
-      <li v-for="datum in metadata" v-bind:key="datum">
-        {{ datum }}
+      <li v-for="column in columns" v-bind:key="column">
+        {{ metadata[column] }}
       </li>
       <li>
         <button @click="playFile()" type="button">Play</button>
@@ -17,7 +17,7 @@
 import constants from '../../commons/constants';
 
 export default {
-  props: ['metadata', 'path'],
+  props: ['metadata', 'path', 'columns'],
   methods: {
     playFile () {
       this.$emit(constants.events.PLAY_FILE, this.path);
