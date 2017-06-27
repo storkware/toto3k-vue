@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import decode from 'urldecode';
+import PromisePool from 'es6-promise-pool';
 import constants from '../commons/constants';
 import mm from 'musicmetadata';
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
@@ -15,30 +16,37 @@ const winURL = process.env.NODE_ENV === 'development'
 
 function scanFiles (event, folderPath) {
   let data = [];
-  dir.readFiles(folderPath, (err, content, file, next) => {
-    if (err) {
-      console.log('error: ' + err);
-      return;
-    }
+  dir.promiseFiles(folderPath).then((files) => {
+    let index = 0;
     // TODO: Manage more extensions properly with different metadata parsers.
-    if (!file.endsWith('.mp3')) {
-      return next();
-    }
-    let readableStream = fs.createReadStream(file);
-    console.log(file);
-    mm(readableStream, function (err, metadata) {
-      if (err) {
-        throw err;
+    files = files.filter((f) => f.endsWith('.mp3'));
+    const promiseProducer = function () {
+      if (index < files.length) {
+        const file = files[index];
+        index++;
+        return new Promise(function (resolve, reject) {
+          let readableStream = fs.createReadStream(file);
+          mm(readableStream, function (err, metadata) {
+            if (err) {
+              resolve();
+              console.log(file, err);
+              return;
+            }
+            data.push({ path: file, metadata: metadata });
+            resolve();
+            readableStream.close();
+          });
+        });
+      } else {
+        return null;
       }
-      data.push({ path: file, metadata: metadata });
-      readableStream.close();
+    };
+
+    var pool = new PromisePool(promiseProducer, 20);
+
+    pool.start().then(() => {
+      event.sender.send(constants.events.FILES_SCANNED, data);
     });
-    next();
-  }, function (err, files) {
-    if (err) {
-      throw err;
-    }
-    event.sender.send(constants.events.FILES_SCANNED, data);
   });
 }
 

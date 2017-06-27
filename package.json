@@ -55,6 +55,7 @@
   "author": "Storkware <storkware@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "es6-promise-pool": "^2.4.6",
     "musicmetadata": "^2.0.5",
     "node-dir": "^0.1.17",
     "urldecode": "^1.0.1"
